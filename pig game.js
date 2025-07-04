@@ -9,10 +9,11 @@ const btnNew = document.querySelector(".btn--new");
 const btnRoll = document.querySelector(".btn--roll");
 const btnHold = document.querySelector(".btn--hold");
 
-let scores, currentScore, activePlayer, playing;
+let score0, score1, currentScore, activePlayer, playing;
 
 const init = () => {
-  scores = [0, 0];
+  score0 = 0;
+  score1 = 0;
   currentScore = 0;
   activePlayer = 0;
   playing = true;
@@ -46,12 +47,14 @@ btnRoll.addEventListener("click", () => {
     diceEl.src = `dice${dice}.jpg`;
     diceEl.style.display = "block";
 
-    if (dice !== 1) {
-      currentScore += dice;
-      document.getElementById(`current--${activePlayer}`).textContent =
-        currentScore;
-    } else {
-      switchPlayer();
+    switch (dice) {
+      case 1:
+        switchPlayer();
+        break;
+      default:
+        currentScore += dice;
+        document.getElementById(`current--${activePlayer}`).textContent = currentScore;
+        break;
     }
   }
 });
@@ -59,24 +62,32 @@ btnRoll.addEventListener("click", () => {
 // Hold Button
 btnHold.addEventListener("click", () => {
   if (playing) {
-    scores[activePlayer] += currentScore;
-    document.getElementById(`score--${activePlayer}`).textContent =
-      scores[activePlayer];
+    switch (activePlayer) {
+      case 0:
+        score0 += currentScore;
+        score0El.textContent = score0;
+        if (score0 >= 100) {
+          playing = false;
+          diceEl.style.display = "none";
+          player0El.classList.add("winner");
+          player0El.querySelector(".player--name").textContent = "Player 1 Wins!";
+        } else {
+          switchPlayer();
+        }
+        break;
 
-    if (scores[activePlayer] >= 100) {
-      playing = false;
-      diceEl.style.display = "none";
-
-      document
-        .querySelector(`.player--${activePlayer}`)
-        .classList.add("winner");
-
-      document.querySelector(
-        `.player--${activePlayer} .player--name`
-      ).textContent = `Player ${activePlayer + 1} Wins!`;
-
-    } else {
-      switchPlayer();
+      case 1:
+        score1 += currentScore;
+        score1El.textContent = score1;
+        if (score1 >= 100) {
+          playing = false;
+          diceEl.style.display = "none";
+          player1El.classList.add("winner");
+          player1El.querySelector(".player--name").textContent = "Player 2 Wins!";
+        } else {
+          switchPlayer();
+        }
+        break;
     }
   }
 });
